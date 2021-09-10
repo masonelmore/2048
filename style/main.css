@@ -512,12 +512,12 @@ hr {
   display: block;
   clear: both; }
 
-.game-intro {
+.game-intro, .bot-explaination {
   float: left;
   line-height: 42px;
   margin-bottom: 0; }
 
-.restart-button {
+.restart-button, .toggle-bot-button {
   display: inline-block;
   background: #8f7a66;
   border-radius: 3px;
@@ -530,8 +530,12 @@ hr {
   text-align: center;
   float: right; }
 
-.game-explanation {
-  margin-top: 50px; }
+.below-game {
+  margin-top: 40px; }
+  .below-game:after {
+    content: "";
+    display: block;
+    clear: both; }
 
 @media screen and (max-width: 520px) {
   html, body {
@@ -557,7 +561,7 @@ hr {
   .heading {
     margin-bottom: 10px; }
 
-  .game-intro {
+  .game-intro, .bot-explaination {
     width: 55%;
     display: block;
     box-sizing: border-box;

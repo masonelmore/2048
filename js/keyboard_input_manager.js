@@ -66,12 +66,18 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.which === 82) {
       self.restart.call(self, event);
     }
+
+    // P key toggles the bot
+    if (!modifiers && event.key === "p") {
+      self.toggleBot.call(self, event);
+    }
   });
 
   // Respond to button presses
   this.bindButtonPress(".retry-button", this.restart);
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+  this.bindButtonPress(".toggle-bot-button", this.toggleBot);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -126,6 +132,11 @@ KeyboardInputManager.prototype.listen = function () {
     }
   });
 };
+
+KeyboardInputManager.prototype.toggleBot = function (event) {
+  event.preventDefault();
+  this.emit("toggleBot");
+}
 
 KeyboardInputManager.prototype.restart = function (event) {
   event.preventDefault();

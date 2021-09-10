@@ -455,21 +455,22 @@ hr {
   @include clearfix;
 }
 
-.game-intro {
+.game-intro, .bot-explaination {
   float: left;
   line-height: 42px;
   margin-bottom: 0;
 }
 
-.restart-button {
+.restart-button, .toggle-bot-button {
   @include button;
   display: block;
   text-align: center;
   float: right;
 }
 
-.game-explanation {
-  margin-top: 50px;
+.below-game {
+  margin-top: 40px;
+  @include clearfix;
 }
 
 @include smaller($mobile-threshold) {
@@ -511,7 +512,7 @@ hr {
   }
 
   // Show intro and restart button side by side
-  .game-intro {
+  .game-intro, .bot-explaination {
     width: 55%;
     display: block;
     box-sizing: border-box;
