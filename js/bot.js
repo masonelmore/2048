@@ -22,6 +22,10 @@ Bot.prototype.start = function () {
         return;
     }
 
+    if (this.gameManager.over) {
+        this.gameManager.restart();
+    }
+
     this.toggleButton.textContent = "Stop";
     this.interval = setInterval(this.run.bind(this), this.delay);
 }
