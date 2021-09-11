@@ -4,6 +4,7 @@ function Bot(gameManager) {
     this.interval = null;
     this.delay = 50;
 
+    this.gameManager.inputManager.on("stepForward", this.run.bind(this));
     this.gameManager.inputManager.on("toggleBot", this.toggle.bind(this));
     this.toggleButton = document.querySelector(".toggle-bot-button");
 }

@@ -39,10 +39,6 @@ KeyboardInputManager.prototype.listen = function () {
     39: 1, // Right
     40: 2, // Down
     37: 3, // Left
-    75: 0, // Vim up
-    76: 1, // Vim right
-    74: 2, // Vim down
-    72: 3, // Vim left
     87: 0, // W
     68: 1, // D
     83: 2, // S
@@ -67,9 +63,14 @@ KeyboardInputManager.prototype.listen = function () {
       self.restart.call(self, event);
     }
 
-    // P key toggles the bot
-    if (!modifiers && event.key === "p") {
+    // K key toggles the bot
+    if (!modifiers && event.key === "k") {
       self.toggleBot.call(self, event);
+    }
+
+    // L key steps the bot forward one move
+    if (!modifiers && event.key === "l") {
+      self.stepForward.call(self, event);
     }
   });
 
@@ -132,6 +133,11 @@ KeyboardInputManager.prototype.listen = function () {
     }
   });
 };
+
+KeyboardInputManager.prototype.stepForward = function (event) {
+  event.preventDefault();
+  this.emit("stepForward");
+}
 
 KeyboardInputManager.prototype.toggleBot = function (event) {
   event.preventDefault();
