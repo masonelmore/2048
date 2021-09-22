@@ -72,6 +72,16 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.key === "l") {
       self.stepForward.call(self, event);
     }
+
+    // , key goes back a move in the history
+    if (!modifiers && event.key === ",") {
+      self.undo.call(self, event);
+    }
+
+    // . key goes forward a move in the history
+    if (!modifiers && event.key === ".") {
+      self.redo.call(self, event);
+    }
   });
 
   // Respond to button presses
@@ -137,6 +147,16 @@ KeyboardInputManager.prototype.listen = function () {
 KeyboardInputManager.prototype.stepForward = function (event) {
   event.preventDefault();
   this.emit("stepForward");
+}
+
+KeyboardInputManager.prototype.undo = function (event) {
+  event.preventDefault();
+  this.emit("undo");
+}
+
+KeyboardInputManager.prototype.redo = function (event) {
+  event.preventDefault();
+  this.emit("redo");
 }
 
 KeyboardInputManager.prototype.toggleBot = function (event) {

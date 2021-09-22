@@ -1,14 +1,17 @@
-function GameManager(size, InputManager, Actuator, StorageManager) {
+function GameManager(size, InputManager, Actuator, StorageManager, History) {
   this.size           = size; // Size of the grid
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
+  this.history        = new History(10);
 
   this.startTiles     = 2;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("undo", this.undo.bind(this));
+  this.inputManager.on("redo", this.redo.bind(this));
 
   this.setup();
 }
@@ -17,6 +20,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
+  this.history.clear();
   this.setup();
 };
 
@@ -43,6 +47,7 @@ GameManager.prototype.setup = function () {
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
+    this.history     = new History(previousState.history.capacity, previousState.history);
   } else {
     this.grid        = new Grid(this.size);
     this.score       = 0;
@@ -52,6 +57,8 @@ GameManager.prototype.setup = function () {
 
     // Add the initial tiles
     this.addStartTiles();
+
+    this.saveHistory();
   }
 
   // Update the actuator
@@ -105,9 +112,51 @@ GameManager.prototype.serialize = function () {
     score:       this.score,
     over:        this.over,
     won:         this.won,
-    keepPlaying: this.keepPlaying
+    keepPlaying: this.keepPlaying,
+    history:     this.history
   };
 };
+
+// Save the game state to history
+GameManager.prototype.saveHistory = function () {
+  var state = this.serialize();
+
+  // Break the circular reference in the history. Makes it impossible to save
+  // the game state in the storage manager because a circular object cannot be
+  // jsonified.
+  delete state.history;
+
+  this.history.add(state);
+}
+
+// Load game state from history
+GameManager.prototype.loadHistory = function (state) {
+  this.grid        = new Grid(state.grid.size, state.grid.cells);
+  this.score       = state.score;
+  this.over        = state.over;
+  this.won         = state.won;
+  this.keepPlaying = state.keepPlaying;
+}
+
+// Go back one move in history
+GameManager.prototype.undo = function () {
+  var state = this.history.undo();
+  if (!state) {
+    return;
+  }
+  this.loadHistory(state);
+  this.actuate();
+}
+
+// Go forward one move in history
+GameManager.prototype.redo = function () {
+  var state = this.history.redo();
+  if (!state) {
+    return;
+  }
+  this.loadHistory(state);
+  this.actuate();
+}
 
 // Move tiles on the grid in the specified direction
 GameManager.prototype.move = function (direction) {
@@ -126,6 +175,8 @@ GameManager.prototype.move = function (direction) {
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
     }
+
+    this.saveHistory();
 
     this.actuate();
   }
