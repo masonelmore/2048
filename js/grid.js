@@ -1,3 +1,8 @@
+var UP = 0;
+var RIGHT = 1;
+var DOWN  = 2;
+var LEFT  = 3;
+
 function Grid(size, previousState) {
   this.size = size;
   this.cells = previousState ? this.fromState(previousState) : this.empty();
@@ -239,3 +244,9 @@ Grid.prototype.findFarthestPosition = function (cell, vector) {
 Grid.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
 };
+
+Grid.prototype.copy = function () {
+  var serialized = this.serialize();
+  var grid = new Grid(serialized.size, serialized.cells);
+  return grid;
+}
