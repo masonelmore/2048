@@ -46,7 +46,7 @@ Bot.prototype.run = function () {
         this.gameManager.keepPlaying();
     }
 
-    var direction = this.nextMoveTopLeft();
+    var direction = this.nextMoveNaive();
     this.gameManager.move(direction);
 }
 
@@ -104,4 +104,38 @@ Bot.prototype.nextMoveTopLeft = function () {
     } else {
         return DOWN;
     }
+}
+
+// Finds a move that produces the highest game score (not some smart grid
+// scoring system). Ties are broken by direction priority.
+Bot.prototype.nextMoveNaive = function () {
+    var directions = [UP, LEFT, RIGHT, DOWN];
+    var highScore = 0;
+    var bestDirection = UP;
+
+    for (var i = 0; i < directions.length; i++) {
+        var direction = directions[i];
+        var grid = this.gameManager.grid.copy();
+        var results = grid.move(direction);
+
+        if (!results.moved) {
+            // Prevent getting stuck in a loop when all scores are equal and
+            // the best direction doesn't move the grid. I can't think of a
+            // game state that requires wrapping around to the beginning of the
+            // `directions` array, but we'll keep it just to be extra cautious.
+            if (direction == bestDirection) {
+                var next = (directions.indexOf(bestDirection) + 1) % directions.length;
+                var bestDirection = directions[next];
+            }
+
+            continue;
+        }
+
+        if (results.score > highScore) {
+            highScore = results.score;
+            bestDirection = direction;
+        }
+    }
+
+    return bestDirection;
 }
