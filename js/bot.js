@@ -139,3 +139,40 @@ Bot.prototype.nextMoveNaive = function () {
 
     return bestDirection;
 }
+
+Bot.prototype.nextMoveSmart = function () {
+    function scoreGrid(grid) {
+        return 0;
+    }
+
+    var directions = [UP, LEFT, RIGHT, DOWN];
+    var highScore = 0;
+    var bestDirection = UP;
+
+    for (var i = 0; i < directions.length; i++) {
+        var direction = directions[i];
+        var grid = this.gameManager.grid.copy();
+        var results = grid.move(direction);
+        var score = scoreGrid(grid);
+
+        if (!results.moved) {
+            // Prevent getting stuck in a loop when all scores are equal and
+            // the best direction doesn't move the grid. I can't think of a
+            // game state that requires wrapping around to the beginning of the
+            // `directions` array, but we'll keep it just to be extra cautious.
+            if (direction == bestDirection) {
+                var next = (directions.indexOf(bestDirection) + 1) % directions.length;
+                var bestDirection = directions[next];
+            }
+
+            continue;
+        }
+
+        if (score > highScore) {
+            highScore = score;
+            bestDirection = direction;
+        }
+    }
+
+    return bestDirection;
+}
